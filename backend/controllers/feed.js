@@ -1,13 +1,17 @@
 export function getPosts(req, res, next) {
   res.status(200).json({
-    _id: '1',
-    title: 'First Post',
-    content: 'This is the first post!',
-    imageUrl: 'images/duck.jpg',
-    creator: {
-      name: 'Max',
-    },
-    date: new Date(),
+    posts: [
+      {
+        _id: '1',
+        title: 'First Post',
+        content: 'This is the first post!',
+        imageUrl: 'images/duck.jpg',
+        creator: {
+          name: 'Max',
+        },
+        date: new Date(),
+      },
+    ],
   });
 }
 
