@@ -22,7 +22,13 @@ export function getPosts(req, res, next) {
 export function createPost(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({ message: 'Validation failed.', errors: errors.array() });
+    const error = new Error('Validation failed.');
+    error.statusCode = 422;
+
+    // quit function execution and try to find the next error handling function or middleware.
+    throw error;
+
+    // return res.status(422).json({ message: 'Validation failed.', errors: errors.array() });
   }
 
   const title = req.body.title;
@@ -48,6 +54,17 @@ export function createPost(req, res, next) {
       });
     })
     .catch((err) => {
-      console.log(err);
+      //   console.log(err);
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+
+      // this will not reach the next error handling middleware
+      // because we are in a promise chain
+      // throw err;
+
+      //  stackoverflow.com/questions/30715367/why-can-i-not-throw-inside-a-promise-catch-handler
+
+      next(err);
     });
 }

@@ -4,13 +4,21 @@ import bodyParser from 'body-parser';
 
 import mongoose from 'mongoose';
 
+import { fileURLToPath } from 'url';
+
+import path, { dirname } from 'path';
+
 import feedRoutes from './routes/feed.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 
 // app.use(bodyParser.urlencoded()); // x-www-form-urlencoded <form>
 
 app.use(bodyParser.json()); // application/json
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -21,6 +29,14 @@ app.use((req, res, next) => {
 
 // GET /feed/posts
 app.use('/feed', feedRoutes);
+
+// general error handling middleware
+app.use((error, req, res, next) => {
+  console.log(error);
+  const status = error.statusCode;
+  const message = error.message;
+  res.status(status).json({ message });
+});
 
 const env = {
   mongodb_username: 'sweepticmac',
