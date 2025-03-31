@@ -1,5 +1,7 @@
 import { Router } from 'express';
 
+import { body } from 'express-validator';
+
 import { createPost, getPosts } from '../controllers/feed.js';
 
 const feedRoutes = Router();
@@ -8,6 +10,10 @@ const feedRoutes = Router();
 feedRoutes.get('/posts', getPosts);
 
 // POST /feed/post
-feedRoutes.post('/post', createPost);
+feedRoutes.post(
+  '/post',
+  [body('title').trim().isLength({ min: 5 }), body('content').trim().isLength({ min: 5 })],
+  createPost
+);
 
 export default feedRoutes;
