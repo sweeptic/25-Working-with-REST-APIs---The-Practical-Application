@@ -3,20 +3,32 @@ import { validationResult } from 'express-validator';
 import Post from '../models/post.js';
 
 export function getPosts(req, res, next) {
-  res.status(200).json({
-    posts: [
-      {
-        _id: '1',
-        title: 'First Post',
-        content: 'This is the first post!',
-        imageUrl: 'images/duck.jpg',
-        creator: {
-          name: 'Max',
-        },
-        date: new Date(),
-      },
-    ],
-  });
+  Post.find()
+    .then((posts) => {
+      res.status(200).json({ message: 'Fetched posts successfully', posts: posts });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+
+      next(err);
+    });
+
+  //   res.status(200).json({
+  //     posts: [
+  //       {
+  //         _id: '1',
+  //         title: 'First Post',
+  //         content: 'This is the first post!',
+  //         imageUrl: 'images/duck.jpg',
+  //         creator: {
+  //           name: 'Max',
+  //         },
+  //         date: new Date(),
+  //       },
+  //     ],
+  //   });
 }
 
 export function createPost(req, res, next) {
@@ -64,6 +76,27 @@ export function createPost(req, res, next) {
       // throw err;
 
       //  stackoverflow.com/questions/30715367/why-can-i-not-throw-inside-a-promise-catch-handler
+
+      next(err);
+    });
+}
+
+export function getPost(req, res, next) {
+  const postId = req.params.postId;
+
+  Post.findById(postId)
+    .then((post) => {
+      if (!post) {
+        const error = new Error('Could not find post.');
+        error.statusCode = 404;
+        throw error;
+      }
+      res.status(200).json({ message: 'Post fetched.', post: post });
+    })
+    .catch(() => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
 
       next(err);
     });
