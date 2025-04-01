@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import { body } from 'express-validator';
 
-import { createPost, getPost, getPosts } from '../controllers/feed.js';
+import { createPost, getPost, getPosts, updatePost } from '../controllers/feed.js';
 
 const feedRoutes = Router();
 
@@ -17,5 +17,11 @@ feedRoutes.post(
 );
 
 feedRoutes.get('/post/:postId', getPost);
+
+feedRoutes.put(
+  '/post/:postId',
+  [body('title').trim().isLength({ min: 5 }), body('content').trim().isLength({ min: 5 })],
+  updatePost
+);
 
 export default feedRoutes;
