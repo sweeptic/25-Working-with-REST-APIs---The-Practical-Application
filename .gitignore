@@ -34,3 +34,4 @@ yarn-error.log*
 .vercel
 pages/contact.js
 next.config.js
+backend/models
