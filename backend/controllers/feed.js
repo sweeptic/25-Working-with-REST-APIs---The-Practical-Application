@@ -12,10 +12,28 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export function getPosts(req, res, next) {
+  const currentPage = req.query.page || 1;
+  const perPage = 2;
+  let totalItems;
+
   Post.find()
-    .then((posts) => {
-      res.status(200).json({ message: 'Fetched posts successfully', posts: posts });
+    .countDocuments()
+    .then((count) => {
+      totalItems = count;
+
+      return Post.find()
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage);
     })
+
+    .then((posts) => {
+      res.status(200).json({
+        message: 'Fetched posts successfully',
+        posts: posts,
+        totalItems: totalItems,
+      });
+    })
+
     .catch((err) => {
       if (!err.statusCode) {
         err.statusCode = 500;
@@ -23,21 +41,6 @@ export function getPosts(req, res, next) {
 
       next(err);
     });
-
-  //   res.status(200).json({
-  //     posts: [
-  //       {
-  //         _id: '1',
-  //         title: 'First Post',
-  //         content: 'This is the first post!',
-  //         imageUrl: 'images/duck.jpg',
-  //         creator: {
-  //           name: 'Max',
-  //         },
-  //         date: new Date(),
-  //       },
-  //     ],
-  //   });
 }
 
 export function createPost(req, res, next) {
