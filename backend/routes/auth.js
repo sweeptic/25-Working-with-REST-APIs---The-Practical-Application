@@ -5,10 +5,10 @@ import { body } from 'express-validator';
 import { signup } from '../controllers/auth.js';
 import User from '../models/user.js';
 
-const userRoutes = Router();
+const authRoutes = Router();
 
 // GET /user/posts
-userRoutes.put(
+authRoutes.put(
   '/signup',
   [
     body('email')
@@ -27,4 +27,4 @@ userRoutes.put(
   signup
 );
 
-export default userRoutes;
+export default authRoutes;

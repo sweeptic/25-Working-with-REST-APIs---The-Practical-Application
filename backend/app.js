@@ -10,7 +10,7 @@ import path, { dirname } from 'path';
 
 import multer from 'multer';
 
-import userRoutes from './routes/auth.js';
+import authRoutes from './routes/auth.js';
 import feedRoutes from './routes/feed.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -50,7 +50,7 @@ app.use((req, res, next) => {
 
 // GET /feed/posts
 app.use('/feed', feedRoutes);
-app.use('/user', userRoutes);
+app.use('/auth', authRoutes);
 
 // general error handling middleware
 app.use((error, req, res, next) => {
