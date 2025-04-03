@@ -13,18 +13,20 @@ feedRoutes.get('/posts', isAuthMD, getPosts);
 // POST /feed/post
 feedRoutes.post(
   '/post',
-  [body('title').trim().isLength({ min: 5 }), body('content').trim().isLength({ min: 5 })],
+  isAuthMD,
+  [(body('title').trim().isLength({ min: 5 }), body('content').trim().isLength({ min: 5 }))],
   createPost
 );
 
-feedRoutes.get('/post/:postId', getPost);
+feedRoutes.get('/post/:postId', isAuthMD, getPost);
 
 feedRoutes.put(
   '/post/:postId',
-  [body('title').trim().isLength({ min: 5 }), body('content').trim().isLength({ min: 5 })],
+  isAuthMD,
+  [(body('title').trim().isLength({ min: 5 }), body('content').trim().isLength({ min: 5 }))],
   updatePost
 );
 
-feedRoutes.delete('/post/:postId', deletePost);
+feedRoutes.delete('/post/:postId', isAuthMD, deletePost);
 
 export default feedRoutes;
