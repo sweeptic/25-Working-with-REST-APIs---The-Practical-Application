@@ -1,15 +1,11 @@
 import { validationResult } from 'express-validator';
 
-import path, { dirname } from 'path';
-
-import { fileURLToPath } from 'url';
+import path from 'path';
 
 import fs from 'fs';
 
 import Post from '../models/post.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import User from '../models/user.js';
 
 export function getPosts(req, res, next) {
   const currentPage = req.query.page || 1;
@@ -64,24 +60,31 @@ export function createPost(req, res, next) {
   const imageUrl = req.file.path;
   const title = req.body.title;
   const content = req.body.content;
+  let creator;
 
   const post = new Post({
     title,
     content,
     imageUrl: imageUrl,
-    creator: {
-      name: 'Max',
-    },
+    creator: req.userId,
   });
 
   post
     .save()
     .then((result) => {
-      console.log('Post created successfully');
+      return User.findById(req.userId);
+    })
+    .then((user) => {
+      creator = user;
+      user.posts.push(post);
+      return user.save();
+    })
 
+    .then((result) => {
       res.status(201).json({
         message: 'Post created successfully',
-        post: result,
+        post: post,
+        creator: { _id: creator._id, name: creator.name },
       });
     })
     .catch((err) => {
