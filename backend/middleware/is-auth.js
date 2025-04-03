@@ -1,8 +1,6 @@
 import jwt from 'jsonwebtoken';
 
 const isAuthMD = (req, res, next) => {
-  //   console.log('req.userId', req.userId);
-
   const authHeader = req.get('Authorization');
   if (!authHeader) {
     const error = new Error('Not authenticated.');

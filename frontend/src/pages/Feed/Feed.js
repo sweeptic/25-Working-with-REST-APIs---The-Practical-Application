@@ -51,7 +51,7 @@ class Feed extends Component {
       page--;
       this.setState({ postPage: page });
     }
-    fetch(`http://localhost:8080/feed/posts?page='${page}'`, {
+    fetch(`http://localhost:8080/feed/posts?page=${page}`, {
       headers: {
         Authorization: 'Bearer ' + this.props.token,
       },
@@ -72,8 +72,6 @@ class Feed extends Component {
       .then((resData) => {
         this.setState({
           posts: resData.posts.map((post) => {
-            console.log('post', post);
-
             return {
               ...post,
               imagePath: post.imageUrl,
@@ -95,9 +93,7 @@ class Feed extends Component {
         }
         return res.json();
       })
-      .then((resData) => {
-        console.log(resData);
-      })
+      .then((resData) => {})
       .catch(this.catchError);
   };
 
@@ -138,8 +134,6 @@ class Feed extends Component {
       method = 'PUT';
     }
 
-    console.log('FETCH');
-
     fetch(url, {
       method: method,
       //   headers: {
@@ -157,8 +151,6 @@ class Feed extends Component {
         return res.json();
       })
       .then((resData) => {
-        console.log('resData', resData);
-
         const post = {
           _id: resData.post._id,
           title: resData.post.title,
@@ -183,7 +175,6 @@ class Feed extends Component {
         });
       })
       .catch((err) => {
-        console.log(err);
         this.setState({
           isEditing: false,
           editPost: null,
@@ -212,14 +203,12 @@ class Feed extends Component {
         return res.json();
       })
       .then((resData) => {
-        console.log(resData);
         this.setState((prevState) => {
           const updatedPosts = prevState.posts.filter((p) => p._id !== postId);
           return { posts: updatedPosts, postsLoading: false };
         });
       })
       .catch((err) => {
-        console.log(err);
         this.setState({ postsLoading: false });
       });
   };

@@ -1,11 +1,16 @@
 import { validationResult } from 'express-validator';
 
-import path from 'path';
+import path, { dirname } from 'path';
+
+import { fileURLToPath } from 'url';
 
 import fs from 'fs';
 
 import Post from '../models/post.js';
 import User from '../models/user.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export function getPosts(req, res, next) {
   const currentPage = req.query.page || 1;
@@ -88,7 +93,6 @@ export function createPost(req, res, next) {
       });
     })
     .catch((err) => {
-      //   console.log(err);
       if (!err.statusCode) {
         err.statusCode = 500;
       }
@@ -125,8 +129,6 @@ export function getPost(req, res, next) {
 }
 
 export function updatePost(req, res, next) {
-  console.log('UPDATEPOST');
-
   const postId = req.params.postId;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -153,6 +155,12 @@ export function updatePost(req, res, next) {
       if (!post) {
         const error = new Error('Could not find post.');
         error.statusCode = 404;
+        throw error;
+      }
+
+      if (post.creator.toString() !== req.userId) {
+        const error = new Error('Not authorized.');
+        error.statusCode = 403;
         throw error;
       }
 
@@ -192,11 +200,17 @@ export function deletePost(req, res, next) {
         error.statusCode = 404;
         throw error;
       }
+
+      if (post.creator.toString() !== req.userId) {
+        const error = new Error('Not authorized.');
+        error.statusCode = 403;
+        throw error;
+      }
+
       clearImage(post.imageUrl);
       return Post.findByIdAndDelete(postId);
     })
     .then((result) => {
-      console.log(result);
       res.status(200).json({ message: 'Post deleted.' });
     })
     .catch((err) => {
