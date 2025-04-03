@@ -11,27 +11,22 @@ const isAuthMD = (req, res, next) => {
   const token = authHeader.split(' ')[1];
   let decodedToken;
 
-  console.log('req.userId ', req.userId);
-
   try {
     decodedToken = jwt.verify(token, 'some-super-secret-string');
   } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-      // not async code
-      throw err;
-    }
-
-    if (!decodedToken) {
-      const error = new Error('Not authenticated.');
-      error.statusCode = 401;
-      throw error;
-    }
-
-    req.userId = decodedToken.userId;
-    console.log('req.userId ', req.userId);
-    next();
+    if (!err.statusCode) err.statusCode = 500;
+    // not async code
+    throw err;
   }
+
+  if (!decodedToken) {
+    const error = new Error('Not authenticated.');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  req.userId = decodedToken.userId;
+  next();
 };
 
 export default isAuthMD;
