@@ -2,6 +2,8 @@ import { validationResult } from 'express-validator';
 
 import bcrypt from 'bcrypt';
 
+import jwt from 'jsonwebtoken';
+
 import User from '../models/user.js';
 
 export function signup(req, res, next) {
@@ -54,7 +56,6 @@ export function login(req, res, next) {
       }
       loadedUser = user;
       return bcrypt.compare(password, user.password);
-      //   res.status(200).json({ message: 'Post fetched.', post: post });
     })
     .then((isEqual) => {
       if (!isEqual) {
@@ -64,6 +65,21 @@ export function login(req, res, next) {
       }
 
       //create JWT
+      const token = jwt.sign(
+        {
+          email: loadedUser.email,
+          userId: loadedUser._id.toString(),
+        },
+        'some-super-secret-string',
+        {
+          expiresIn: '1h',
+        }
+      );
+
+      res.status(200).json({
+        token: token,
+        userId: loadedUser._id.toString(),
+      });
     })
     .catch((err) => {
       if (!err.statusCode) {
