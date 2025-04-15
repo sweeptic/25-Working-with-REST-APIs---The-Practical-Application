@@ -104,7 +104,7 @@ export function createPost(req, res, next) {
       //  stackoverflow.com/questions/30715367/why-can-i-not-throw-inside-a-promise-catch-handler
 
       //stackoverflow.com/questions/27794750/node-js-with-express-throw-error-vs-nexterror
-      https: next(err);
+      next(err);
     });
 }
 
